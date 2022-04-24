@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Flask, render_template,request
+from flask import Flask, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -12,7 +12,7 @@ db = SQLAlchemy(app)
 class Todo(db.Model):
     sno = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
-    cont = db.Column(db.String(600), nullable = False)
+    cont = db.Column(db.String(600), nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self) -> str:
@@ -28,14 +28,21 @@ def helloworld():
         db.session.add(todo)
         db.session.commit()
     allTodo = Todo.query.all()
-    return render_template('index.html', allTodo = allTodo)
+    return render_template('index.html', allTodo=allTodo)
 
 
-@app.route('/show')
-def show():
+@app.route('/delete/<int:serial>')
+def delete(serial):
+    rec = Todo.query.filter_by(sno=serial).first()
+    db.session.delete(rec)
+    db.session.commit()
+    return redirect('/')
+
+@app.route('/update')
+def update():
     allTodo = Todo.query.all()
     print(allTodo)
-    return 'this is the db page'
+    
 
 
 if __name__ == "__main__":
