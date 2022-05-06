@@ -1,12 +1,17 @@
 from datetime import datetime
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
+from matplotlib.pyplot import title
 
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///myTodo.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
+@app.route("/static/<path:path>")
+def static_dir(path):
+    return send_from_directory("static", path)
 
 
 class Todo(db.Model):
@@ -38,11 +43,20 @@ def delete(serial):
     db.session.commit()
     return redirect('/')
 
-@app.route('/update')
-def update():
-    allTodo = Todo.query.all()
-    print(allTodo)
-    
+
+@app.route('/update/<int:sno>', methods=['GET', 'POST'])  # passing the serial number
+def update(sno):
+    if request.method=='POST':
+        title1 = request.form['title']
+        cont1 = request.form['content']
+        todo = Todo.query.filter_by(sno=sno).first()
+        todo.title = title1
+        todo.cont = cont1
+        db.session.add(todo)
+        db.session.commit()
+        return redirect('/')
+    todo = Todo.query.filter_by(sno=sno).first()
+    return render_template('update.html', todo=todo)
 
 
 if __name__ == "__main__":
