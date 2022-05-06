@@ -9,11 +9,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///myTodo.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-@app.route("/static/<path:path>")
-def static_dir(path):
-    return send_from_directory("static", path)
-
-
 class Todo(db.Model):
     sno = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
