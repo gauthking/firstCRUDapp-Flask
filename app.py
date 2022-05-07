@@ -1,7 +1,6 @@
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
-from matplotlib.pyplot import title
 
 app = Flask(__name__)
 
